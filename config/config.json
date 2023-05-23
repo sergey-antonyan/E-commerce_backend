@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "postgres",  
+    "password": "Y1012Jqkhkp,",  
+    "database": "my_new_database123",  
+    "host": "localhost",
+    "dialect": "postgres"   
+  },
+  "test": {
+    "username": "postgres",   
+    "password": "Y1012Jqkhkp,",  
+    "database": "my_new_database123", 
+    "host": "localhost",
+    "dialect": "postgres"   
+  },
+  "production": {
+    "username": "postgres",   
+    "password": "Y1012Jqkhkp,",  
+    "database": "my_new_database123",   
+    "host": "localhost",
+    "dialect": "postgres"  
+  }
+}
