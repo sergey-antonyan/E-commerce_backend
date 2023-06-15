@@ -2,7 +2,10 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Shoping_Carts', {
+    await queryInterface.createTable('Shoping_Carts', { // SELECT Users.firstName , Products.product_name , Shoping_Carts.quantity FROM Shoping_Carts 
+      //INNER JOIN Users ON Users.id = Shoping_Carts.userId ;
+      //INNER JOIN Products ON Products.id = Shoping_Carts.productId
+
       id: {
         allowNull: false,
         autoIncrement: true,

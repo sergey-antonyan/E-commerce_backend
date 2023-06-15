@@ -1,4 +1,5 @@
 const {Category} = require('../models');
+const {Products} = require('../models')
 
 exports.addCategory = async(req, res)=>{
   try{
@@ -11,6 +12,25 @@ exports.addCategory = async(req, res)=>{
       res.status(500).json({error: err.message})
   }
 };
+
+// exports.getCategoryNeww = async (req, res) => {
+//   try {
+//     const category_name = req.body.category_name;
+//     const data = await Category.findAll({
+//       where: { category_name: category_name },
+//       include: [{
+//         model: Products,
+//         attributes: ['categoryId', 'product_name']
+//       }]
+//     });
+//     res.status(201).json(data);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// }
+
+
+
 
 exports.getCategories = async(req,res)=>{
   try{
@@ -25,12 +45,12 @@ exports.getCategories = async(req,res)=>{
 
 exports.getOneCategory = (req,res) => {
   const id = req.params.id;
-    Category.findByPk(id)
+    Category.findOne({ where: { id: id } })
       .then((data) => {
         if(data){
           res.send(data);
         }else{
-          res.status(404).send({message: `Cannot find Product with id=${id}.`});
+          res.status(404).send({message: `Cannot find Category with id=${id}.`});
         }
       })
   }

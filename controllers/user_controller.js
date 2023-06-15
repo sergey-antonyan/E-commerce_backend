@@ -53,24 +53,65 @@ exports.login = (req, res) => {
     return res.status(400).json({ error: error.details[0].message });
   }
   const hashed_password = CryptoJS.SHA256(password).toString();
-  Users.findOne({ where: { Email: Email } }).then((data) => {
-    console.log(data.password, hashed_password);
-    if (data && data.password === hashed_password && data.is_verified == 1) {
-      let token = generateAccessToken(Email, data.role);
-      res.send(
-        JSON.stringify({
-          status: "Logged in",
-          userName: data.userName,
-          jwt: token,
-          role: data.role,
-          is_verified: data.is_verified,
-        })
-      );
-    } else {
-      res.send(JSON.stringify({ status: "Not logged in" }));
-    }
-  });
+  Users.findOne({ where: { Email: Email } })
+    .then((data) => {
+      if (!data || data.Email !== Email || data.password !== hashed_password) {
+        return res.status(401).json({ error: "Incorrect email or password" });
+      }
+      if (data.is_verified != 1) {
+        res.send(JSON.stringify({ status: "Not logged in", error: "Account not verified" }));
+      } else {
+        let token = generateAccessToken(Email, data.id ,data.role);
+        res.send(
+          JSON.stringify({
+            status: "Logged in",
+            userName: data.userName,
+            jwt: token,
+            role: data.role,
+            is_verified: data.is_verified,
+          })
+        );
+      }
+    })
+    .catch((error) => {
+      // Handle any other errors that may occur during the database query
+      console.error("Error during login:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    });
 };
+
+
+// exports.login = (req, res) => {
+//   const { Email, password } = req.body;
+//   const { error } = logSchema.validate(req.body);
+//   console.log(Email);
+//   if (error) {
+//     return res.status(400).json({ error: error.details[0].message });
+//   }
+//   const hashed_password = CryptoJS.SHA256(password).toString();
+//   Users.findOne({ where: { Email: Email } }).then((data) => {
+//     if (data.Email != Email  || data.password != password) {
+//       // Email not found in the database
+//       return res.status(401).json({ error: "Incorrect email or password" });
+//     }
+//     if (data && data.password === hashed_password && data.is_verified == 1) {
+//       let token = generateAccessToken(Email, data.role);
+//       res.send(
+//         JSON.stringify({
+//           status: "Logged in",
+//           userName: data.userName,
+//           jwt: token,
+//           role: data.role,
+//           is_verified: data.is_verified,
+//         })
+//       );
+//     } else if (data && data.is_verified != 1) {
+//       res.send(JSON.stringify({ status: "Not logged in", error: "Account not verified" }));
+//     }else {
+//       res.send(JSON.stringify({ status: "Not logged in" }));
+//     }
+//   });
+// };
 
 exports.getAllUsers = (req, res) => {
   Users.findAll()

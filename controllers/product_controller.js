@@ -1,4 +1,5 @@
 const { Products } = require("../models");
+const { Category } = require("../models");
 const fs = require("fs");
 
 exports.addProduct = (req, res) => {
@@ -23,7 +24,7 @@ exports.addProduct = (req, res) => {
 };
 
 exports.getAllProducts = (req, res) => {
-  Products.findAll()
+  Products.findAll({include: Category})
     .then((products) => res.json(products))
     .catch((err) =>
       res.status(500).send({ err: err.message || "There was an error " })
@@ -32,19 +33,24 @@ exports.getAllProducts = (req, res) => {
 
 exports.getOneProduct = (req, res) => {
   const id = req.params.id;
-  Products.find(id).then((data) => {
-    if (data) {
-      res.send(data);
-    } else {
-      res.status(404).send({ message: `Cannot find Product with id=${id}.` });
-    }
-  });
+  Products.findOne({ where: { id: id } })
+    .then((data) => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({ message: `Cannot find Product with id=${id}.` });
+      }
+    })
+    .catch((error) => {
+      res.status(500).send({ message: "Error retrieving Product." });
+    });
 };
+
 
 exports.deleteProduct = async (req, res) => {
   try {
     const id = req.params.id;
-    const product = await Products.findOne(id);
+    const product = await Products.findByPk(id);
 
         if (!product) {
             return res.status(404).json({ error: 'Product not found' });
@@ -64,8 +70,6 @@ exports.deleteProduct = async (req, res) => {
         }
         await Products.destroy({ where: { id: id } });
         return res.status(200).json({ message: 'Product deleted successfully' });
-    // const data = await Products.destroy({ where: { id: id } });
-    // res.status(201).json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
